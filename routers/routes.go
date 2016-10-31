@@ -10,7 +10,7 @@ var routes = Routes{
 		v1.Healthz,
 	},
 	Route{
-		"GetSettingsById",
+		"GetSettingsByUserId",
 		"GET",
 		"/api/v1/settings/{userId}",
 		v1.GetSettingsById,
@@ -18,7 +18,13 @@ var routes = Routes{
 	Route{
 		"CreateNewSettings",
 		"POST",
-		"/api/v1/settings",
+		"/api/v1/settings/{userId}",
 		v1.CreateSettings,
+	},
+	Route{
+		"DeleteSettings",
+		"DELETE",
+		"/api/v1/settings/{userId}",
+		v1.DeleteSettings,
 	},
 }

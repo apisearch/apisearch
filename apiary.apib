@@ -1,6 +1,7 @@
 FORMAT: 1A
 HOST: http://polls.apiblueprint.org/
 
+
 # apisearch/importer
 
 Download XML files from e-shop and store them into ES.
@@ -34,9 +35,9 @@ Download XML files from e-shop and store them into ES.
 ### Store user's settings [POST]
 + Request
     + Attributes (Settings, required)
-+ Response 200 (application/json)
-+ Response 400 (application/json)
++ Response 204 (application/json)
++ Response 500 (application/json)
 
 ### Delete user's settings [DELETE]
-+ Response 200 (application/json)
++ Response 204 (application/json)
 + Response 400 (application/json)

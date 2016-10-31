@@ -1,7 +1,8 @@
 package model
 
 type Settings struct {
-	UserId    int    `json:"userId"`
-	XmlUrl    string `json:"xmlUrl"`
-	XmlFormat string `json:"xmlFormat"`
+	UserId     int
+	FeedUrl    string `json:"feedUrl"`
+	FeedFormat string `json:"feedFormat"`
+	Frequency  int    `json:"frequency"`
 }
