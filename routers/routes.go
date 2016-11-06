@@ -1,6 +1,6 @@
 package routers
 
-import "github.com/apisearch/importer/routers/api/v1"
+import "github.com/apisearch/importer/handlers/api/v1"
 
 var routes = Routes{
 	Route{
@@ -16,7 +16,7 @@ var routes = Routes{
 		v1.GetSettingsById,
 	},
 	Route{
-		"CreateNewSettings",
+		"UpsertSettings",
 		"POST",
 		"/api/v1/settings/{userId}",
 		v1.CreateSettings,

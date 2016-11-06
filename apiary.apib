@@ -16,7 +16,7 @@ Download XML files from e-shop and store them into ES.
     - `zbozi`
     - `google`
     - `json`
-- frequency: `3600` (number, required) - Frequency of feed download in seconds
+- downloadInterval: `3600` (number, required) - Interval between feeds download in seconds
 
 
 ## Status [/api/v1/status]
@@ -35,9 +35,9 @@ Download XML files from e-shop and store them into ES.
 ### Store user's settings [POST]
 + Request
     + Attributes (Settings, required)
-+ Response 204 (application/json)
++ Response 200 (application/json)
 + Response 500 (application/json)
 
 ### Delete user's settings [DELETE]
-+ Response 204 (application/json)
++ Response 200 (application/json)
 + Response 400 (application/json)
