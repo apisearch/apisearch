@@ -1,14 +1,15 @@
-package model
+package settings
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/apisearch/importer/model/elasticsearch"
 	"golang.org/x/net/context"
+	"gopkg.in/olivere/elastic.v5"
+	"reflect"
 )
 
 type Settings struct {
-	UserId           string `json:"-"`
+	UserId           string `json:"userId"`
 	FeedUrl          string `json:"feedUrl"`
 	FeedFormat       string `json:"feedFormat"`
 	DownloadInterval int    `json:"downloadInterval"`
@@ -16,56 +17,38 @@ type Settings struct {
 
 const (
 	indexName = "settings"
-	typeName  = "settings"
+	typeName  = "setting"
 	mapping   = `{
 		"settings":{
-			"properties":{
-				"feedUrl":{
-					"type":"string",
-					"index": "no"
-				},
-				"feedFormat":{
-					"type":"string",
-					"index": "no"
-				},
-				"downloadInterval":{
-					"type":"long"
+			"number_of_shards": 1,
+			"number_of_replicas": 0
+		},
+		"mappings":{
+			"setting":{
+				"properties":{
+					"feedUrl":{
+						"type":"string",
+						"index": "no"
+					},
+					"feedFormat":{
+						"type":"string",
+						"index": "no"
+					},
+					"downloadInterval":{
+						"type":"long"
+					}
 				}
 			}
 		}
 	}`
 )
 
+func CreateIndex() error {
+	return elasticsearch.CreateIndex(mapping, indexName)
+}
+
 func (s *Settings) Upsert() error {
 	client := elasticsearch.CreateClient()
-
-	exists, err := client.IndexExists(indexName).Do(context.TODO())
-
-	if err != nil {
-		return err
-	}
-
-	if !exists {
-		response, err := client.CreateIndex(indexName).Do(context.TODO())
-
-		if err != nil {
-			return err
-		}
-
-		if response == nil || !response.Acknowledged {
-			return errors.New("Unable to create index")
-		}
-	}
-
-	mappingResponse, err := client.PutMapping().Index(indexName).Type(typeName).BodyString(mapping).Do(context.TODO())
-
-	if err != nil {
-		return err
-	}
-
-	if mappingResponse == nil || !mappingResponse.Acknowledged {
-		return errors.New("Unable to put mapping")
-	}
 
 	response, err := client.Index().
 		Index(indexName).
@@ -115,4 +98,25 @@ func (s *Settings) RemoveByUserId(userId string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (s *Settings) GetAll() ([]Settings, error) {
+	client := elasticsearch.CreateClient()
+
+	res, err := client.Search().Index(indexName).Query(elastic.NewMatchAllQuery()).Size(10000).Do(context.TODO())
+
+	if err != nil {
+		return nil, err
+	}
+
+	var ttyp Settings
+	var result = []Settings{}
+
+	for _, item := range res.Each(reflect.TypeOf(ttyp)) {
+		if s, ok := item.(Settings); ok {
+			result = append(result, s)
+		}
+	}
+
+	return result, nil
 }

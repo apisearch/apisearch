@@ -1,6 +1,7 @@
 package elasticsearch
 
 import (
+	"errors"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
 )
@@ -24,3 +25,44 @@ func CreateClient() *elastic.Client {
 
 	return client
 }
+
+func CreateIndex(mapping string, indexName string) error {
+	client := CreateClient()
+
+	exists, err := client.IndexExists(indexName).Do(context.TODO())
+
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		response, err := client.CreateIndex(indexName).BodyString(mapping).Do(context.TODO())
+
+		if err != nil {
+			return err
+		}
+
+		if response == nil || !response.Acknowledged {
+			return errors.New("Unable to create index")
+		}
+	}
+
+	return nil
+}
+
+//func PutMapping(mapping string, indexName string) error {
+// todo...
+//	mappingResponse, err := client.PutMapping().Index(indexName).Type(indexName).BodyString(mapping).Do(context.TODO())
+//
+//	if err != nil {
+//		return err
+//	}
+//
+//	if mappingResponse == nil || !mappingResponse.Acknowledged {
+//		return errors.New("Unable to put mapping")
+//	}
+//}
+
+//func RemoveIndex(mapping string, indexName string) error {
+// todo...
+//}

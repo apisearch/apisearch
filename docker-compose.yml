@@ -9,3 +9,15 @@ services:
     image: kibana:5.0.0
     ports:
       - "5602:5601"
+  cerebro:
+    image: ludekvesely/elasticsearch-cerebro
+    environment:
+      - "ELASTICSEARCH_HOST=http://elasticsearch:9200"
+    ports:
+      - "9000:9000"
+  data:
+    image: nginx:stable
+    ports:
+      - "8081:80"
+    volumes:
+      - ./data:/usr/share/nginx/html

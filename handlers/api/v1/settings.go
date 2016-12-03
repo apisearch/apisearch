@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/apisearch/importer/handlers/request"
 	"github.com/apisearch/importer/handlers/response"
-	"github.com/apisearch/importer/model"
+	model "github.com/apisearch/importer/model/settings"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strings"
