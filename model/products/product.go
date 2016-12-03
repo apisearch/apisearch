@@ -22,46 +22,46 @@ type ProductList struct {
 }
 
 const (
-	indexName = "products"
-	typeName  = "product"
-	mapping   = `{
+	indexName     = "products"
+	typeName      = "product"
+	indexSettings = `{
 		"settings":{
 			"number_of_shards": 1,
 			"number_of_replicas": 0
-		},
-		"mappings":{
-			"product":{
-				"properties":{
-					"id":{
-						"type": "string",
-						"index": "not_analyzed"
-					},
-					"userId":{
-						"type": "integer"
-					},
-					"name":{
-						"type": "string",
-						"index": "not_analyzed"
-					},
-					"description":{
-						"type": "string",
-						"index": "not_analyzed"
-					},
-					"url":{
-						"type": "string",
-						"index": "not_analyzed"
-					},
-					"img":{
-						"type": "string",
-						"index": "not_analyzed"
-					},
-					"price":{
-						"type": "float"
-					},
-					"updated":{
-						"type": "date",
-						"format": "date_time_no_millis"
-					}
+		}
+	}`
+	typeSettings = `{
+		"product":{
+			"properties":{
+				"id":{
+					"type": "string",
+					"index": "not_analyzed"
+				},
+				"userId":{
+					"type": "integer"
+				},
+				"name":{
+					"type": "string",
+					"index": "not_analyzed"
+				},
+				"description":{
+					"type": "string",
+					"index": "not_analyzed"
+				},
+				"url":{
+					"type": "string",
+					"index": "not_analyzed"
+				},
+				"img":{
+					"type": "string",
+					"index": "not_analyzed"
+				},
+				"price":{
+					"type": "float"
+				},
+				"updated":{
+					"type": "date",
+					"format": "date_time_no_millis"
 				}
 			}
 		}
@@ -69,8 +69,24 @@ const (
 	DateFormat = "2006-01-02T15:04:05-07:00"
 )
 
-func CreateIndex() error {
-	return elasticsearch.CreateIndex(mapping, indexName)
+func CreateIndex(force bool) error {
+	var err error
+
+	if force {
+		err = elasticsearch.DeleteIndex(indexName)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	err = elasticsearch.CreateIndex(indexSettings, indexName)
+
+	if err != nil {
+		return err
+	}
+
+	return elasticsearch.PutMapping(typeSettings, indexName, typeName)
 }
 
 func (p *Product) Upsert() error {
@@ -114,8 +130,17 @@ func BulkFlush(bulk *elastic.BulkProcessor) error {
 	return bulk.Close()
 }
 
-func DeleteOlderThan(datetime string) error {
-	// TODO: delete by query...
+func DeleteOlderThan(updated string) error {
+	client := elasticsearch.CreateClient()
 
-	return nil
+	q := elastic.NewBoolQuery()
+	q = q.MustNot(elastic.NewRangeQuery("updated").To(updated))
+
+	_, err := client.DeleteByQuery().
+		Index(indexName).
+		Type(typeName).
+		Query(q).
+		Do(context.TODO())
+
+	return err
 }

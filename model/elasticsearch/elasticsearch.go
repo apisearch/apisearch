@@ -28,7 +28,6 @@ func CreateClient() *elastic.Client {
 
 func CreateIndex(mapping string, indexName string) error {
 	client := CreateClient()
-
 	exists, err := client.IndexExists(indexName).Do(context.TODO())
 
 	if err != nil {
@@ -50,19 +49,24 @@ func CreateIndex(mapping string, indexName string) error {
 	return nil
 }
 
-//func PutMapping(mapping string, indexName string) error {
-// todo...
-//	mappingResponse, err := client.PutMapping().Index(indexName).Type(indexName).BodyString(mapping).Do(context.TODO())
-//
-//	if err != nil {
-//		return err
-//	}
-//
-//	if mappingResponse == nil || !mappingResponse.Acknowledged {
-//		return errors.New("Unable to put mapping")
-//	}
-//}
+func PutMapping(mapping string, indexName string, typeName string) error {
+	client := CreateClient()
+	response, err := client.PutMapping().Index(indexName).Type(typeName).BodyString(mapping).Do(context.TODO())
 
-//func RemoveIndex(mapping string, indexName string) error {
-// todo...
-//}
+	if err != nil {
+		return err
+	}
+
+	if response == nil || !response.Acknowledged {
+		return errors.New("Unable to put mapping")
+	}
+
+	return nil
+}
+
+func DeleteIndex(indexName string) error {
+	client := CreateClient()
+	_, err := client.DeleteIndex(indexName).Do(context.TODO())
+
+	return err
+}

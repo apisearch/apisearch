@@ -6,10 +6,10 @@ import (
 	"log"
 )
 
-func CreateIndex() {
+func CreateIndex(force bool) {
 	var err error
 
-	err = settings.CreateIndex()
+	err = settings.CreateIndex(force)
 
 	if err != nil {
 		log.Println("Unable to create index 'settings': " + err.Error())
@@ -17,7 +17,7 @@ func CreateIndex() {
 		log.Println("Create index 'settings': OK")
 	}
 
-	err = products.CreateIndex()
+	err = products.CreateIndex(force)
 
 	if err != nil {
 		log.Println("Unable to create index 'products': " + err.Error())

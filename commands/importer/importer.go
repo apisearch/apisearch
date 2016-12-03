@@ -59,18 +59,18 @@ func importXmlFile(s model.Settings) error {
 		return err
 	}
 
-	var updated string = time.Now().Format(products.DateFormat)
+	var firstUpdated string = time.Now().Format(products.DateFormat)
 	var bulk *elastic.BulkProcessor
 
 	bulk, err = products.BulkStart(s.UserId)
 
 	for i, _ := range productList.ProductList {
 		productList.ProductList[i].UserId = s.UserId
-		productList.ProductList[i].Updated = updated
+		productList.ProductList[i].Updated = time.Now().Format(products.DateFormat)
 		productList.ProductList[i].BulkIndex(bulk)
 	}
 
-	products.DeleteOlderThan(updated)
+	products.DeleteOlderThan(firstUpdated)
 
 	err = products.BulkFlush(bulk)
 

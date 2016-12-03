@@ -16,35 +16,51 @@ type Settings struct {
 }
 
 const (
-	indexName = "settings"
-	typeName  = "setting"
-	mapping   = `{
+	indexName     = "settings"
+	typeName      = "setting"
+	indexSettings = `{
 		"settings":{
 			"number_of_shards": 1,
 			"number_of_replicas": 0
-		},
-		"mappings":{
-			"setting":{
-				"properties":{
-					"feedUrl":{
-						"type":"string",
-						"index": "no"
-					},
-					"feedFormat":{
-						"type":"string",
-						"index": "no"
-					},
-					"downloadInterval":{
-						"type":"long"
-					}
+		}
+	}`
+	typeSettings = `{
+		"setting":{
+			"properties":{
+				"feedUrl":{
+					"type":"string",
+					"index": "no"
+				},
+				"feedFormat":{
+					"type":"string",
+					"index": "no"
+				},
+				"downloadInterval":{
+					"type":"long"
 				}
 			}
 		}
 	}`
 )
 
-func CreateIndex() error {
-	return elasticsearch.CreateIndex(mapping, indexName)
+func CreateIndex(force bool) error {
+	var err error
+
+	if force {
+		err = elasticsearch.DeleteIndex(indexName)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	err = elasticsearch.CreateIndex(indexSettings, indexName)
+
+	if err != nil {
+		return err
+	}
+
+	return elasticsearch.PutMapping(typeSettings, indexName, typeName)
 }
 
 func (s *Settings) Upsert() error {

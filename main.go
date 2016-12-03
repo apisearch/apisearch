@@ -38,13 +38,15 @@ func main() {
 			},
 		},
 		{
-			// TODO: add options - drop before create, put mappings only
 			Name:    "createIndex",
 			Aliases: []string{"c"},
 			Usage:   "create index in elasticsearch",
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "force"},
+			},
 			Action: func(c *cli.Context) error {
 				log.Println("Creating index...")
-				elastic.CreateIndex()
+				elastic.CreateIndex(c.Bool("force"))
 				return nil
 			},
 		},
