@@ -2,7 +2,7 @@ package settings
 
 import (
 	"encoding/json"
-	"github.com/apisearch/importer/model/elasticsearch"
+	"github.com/apisearch/apisearch/model/elasticsearch"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
 	"reflect"
@@ -19,23 +19,23 @@ const (
 	indexName     = "settings"
 	typeName      = "setting"
 	indexSettings = `{
-		"settings":{
+		"settings": {
 			"number_of_shards": 1,
 			"number_of_replicas": 0
 		}
 	}`
 	typeSettings = `{
-		"setting":{
-			"properties":{
-				"feedUrl":{
+		"setting": {
+			"properties": {
+				"feedUrl": {
 					"type":"string",
 					"index": "no"
 				},
-				"feedFormat":{
+				"feedFormat": {
 					"type":"string",
 					"index": "no"
 				},
-				"downloadInterval":{
+				"downloadInterval": {
 					"type":"long"
 				}
 			}

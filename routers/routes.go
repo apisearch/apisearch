@@ -1,6 +1,6 @@
 package routers
 
-import "github.com/apisearch/importer/handlers/api/v1"
+import "github.com/apisearch/apisearch/handlers/api/v1"
 
 var routes = Routes{
 	Route{

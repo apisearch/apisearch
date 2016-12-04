@@ -1,8 +1,8 @@
 package elastic
 
 import (
-	"github.com/apisearch/importer/model/products"
-	"github.com/apisearch/importer/model/settings"
+	"github.com/apisearch/apisearch/model/products"
+	"github.com/apisearch/apisearch/model/settings"
 	"log"
 )
 

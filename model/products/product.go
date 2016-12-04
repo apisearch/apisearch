@@ -1,20 +1,20 @@
 package products
 
 import (
-	"github.com/apisearch/importer/model/elasticsearch"
+	"github.com/apisearch/apisearch/model/elasticsearch"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
 )
 
 type Product struct {
-	Id          string `xml:"ITEM_ID",json:"id"`
-	UserId      string `xml:"-",json:"userId"`
-	Name        string `xml:"PRODUCTNAME",json:"name"`
-	Description string `xml:"DESCRIPTION",json:"description"`
-	Url         string `xml:"URL",json:"url"`
-	Img         string `xml:"IMGURL",json:"img"`
-	Price       int    `xml:"PRICE_VAT",json:"price"`
-	Updated     string `xml:"-",json:"updated"`
+	Id          string `xml:"ITEM_ID" json:"id"`
+	UserId      string `xml:"-" json:"userId"`
+	Name        string `xml:"PRODUCTNAME" json:"name"`
+	Description string `xml:"DESCRIPTION" json:"description"`
+	Url         string `xml:"URL" json:"url"`
+	Img         string `xml:"IMGURL" json:"img"`
+	Price       int    `xml:"PRICE_VAT" json:"price"`
+	Updated     string `xml:"-" json:"updated"`
 }
 
 type ProductList struct {
@@ -25,48 +25,127 @@ const (
 	indexName     = "products"
 	typeName      = "product"
 	indexSettings = `{
-		"settings":{
+		"settings": {
 			"number_of_shards": 1,
-			"number_of_replicas": 0
+			"number_of_replicas": 0,
+			"analysis": {
+				"filter": {
+					"unique": {
+						"type": "unique",
+						"only_on_same_position": "false"
+					},
+					"pattern_replace": {
+						"type": "pattern_replace",
+						"preserve_original": 1,
+						"pattern": "\\b(\\w{1,3})\\s+(\\w{1,3})\\b",
+						"replacement": "$1$2"
+					},
+					"stopwords": {
+						"type": "stop",
+						"ignore_case": true,
+						"stopwords": ["právě", "že", "_czech_"]
+					},
+					"hunspell": {
+						"type": "hunspell",
+						"locale": "cs_CZ",
+						"dedup": true
+					},
+					"shingle": {
+						"type": "shingle",
+						"filter_token": "",
+						"max_shingle_size": 3
+					},
+					"min_length": {
+						"type": "length",
+						"min": 2
+					}
+				},
+				"analyzer": {
+					"hunspell": {
+						"filter": [
+							"pattern_replace",
+							"min_length",
+							"hunspell",
+							"icu_folding",
+							"unique"
+						],
+						"tokenizer": "standard"
+					},
+					"icu": {
+						"filter": [
+							"icu_folding",
+							"stopwords",
+							"hunspell",
+							"stopwords",
+							"unique"
+						],
+						"tokenizer": "standard"
+					},
+					"shingle": {
+						"filter": [
+							"shingle",
+							"pattern_replace",
+							"min_length",
+							"hunspell",
+							"icu_folding",
+							"unique"
+						],
+						"tokenizer": "standard"
+					}
+				}
+			}
 		}
 	}`
 	typeSettings = `{
-		"product":{
-			"properties":{
-				"id":{
+		"product": {
+			"properties": {
+				"id": {
 					"type": "string",
 					"index": "not_analyzed"
 				},
-				"userId":{
+				"userId": {
 					"type": "integer"
 				},
-				"name":{
+				"name": {
+					"type": "string",
+					"index": "not_analyzed",
+					"fields": {
+						"hunspell": {
+							"type": "string",
+							"analyzer": "hunspell"
+						},
+						"icu": {
+							"type": "string",
+							"analyzer": "icu"
+						},
+						"shingle": {
+							"type": "string",
+							"analyzer": "shingle"
+						}
+					}
+				},
+				"description": {
 					"type": "string",
 					"index": "not_analyzed"
 				},
-				"description":{
+				"url": {
 					"type": "string",
 					"index": "not_analyzed"
 				},
-				"url":{
+				"img": {
 					"type": "string",
 					"index": "not_analyzed"
 				},
-				"img":{
-					"type": "string",
-					"index": "not_analyzed"
-				},
-				"price":{
+				"price": {
 					"type": "float"
 				},
-				"updated":{
+				"updated": {
 					"type": "date",
 					"format": "date_time_no_millis"
 				}
 			}
 		}
 	}`
-	DateFormat = "2006-01-02T15:04:05-07:00"
 )
 
 func CreateIndex(force bool) error {
@@ -89,24 +168,6 @@ func CreateIndex(force bool) error {
 	return elasticsearch.PutMapping(typeSettings, indexName, typeName)
 }
 
-func (p *Product) Upsert() error {
-	client := elasticsearch.CreateClient()
-
-	response, err := client.
-		Index().
-		Index(indexName).
-		Type(typeName).
-		Id(p.UserId + "__" + p.Id).
-		BodyJson(p).
-		Do(context.TODO())
-
-	if response == nil || err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (p *Product) BulkIndex(bulk *elastic.BulkProcessor) {
 	request := elastic.
 		NewBulkIndexRequest().
@@ -118,10 +179,10 @@ func (p *Product) BulkIndex(bulk *elastic.BulkProcessor) {
 	bulk.Add(request)
 }
 
-func BulkStart(userId string) (*elastic.BulkProcessor, error) {
+func BulkStart() (*elastic.BulkProcessor, error) {
 	client := elasticsearch.CreateClient()
 
-	return client.BulkProcessor().Name("index-products-" + userId).Workers(4).Do()
+	return client.BulkProcessor().Name(indexName).Workers(4).Do()
 }
 
 func BulkFlush(bulk *elastic.BulkProcessor) error {

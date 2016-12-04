@@ -2,8 +2,9 @@ package importer
 
 import (
 	"encoding/xml"
-	"github.com/apisearch/importer/model/products"
-	model "github.com/apisearch/importer/model/settings"
+	"github.com/apisearch/apisearch/model/elasticsearch"
+	"github.com/apisearch/apisearch/model/products"
+	model "github.com/apisearch/apisearch/model/settings"
 	"gopkg.in/olivere/elastic.v5"
 	"io/ioutil"
 	"log"
@@ -59,14 +60,14 @@ func importXmlFile(s model.Settings) error {
 		return err
 	}
 
-	var firstUpdated string = time.Now().Format(products.DateFormat)
+	var firstUpdated string = time.Now().Format(elasticsearch.DateFormat)
 	var bulk *elastic.BulkProcessor
 
-	bulk, err = products.BulkStart(s.UserId)
+	bulk, err = products.BulkStart()
 
 	for i, _ := range productList.ProductList {
 		productList.ProductList[i].UserId = s.UserId
-		productList.ProductList[i].Updated = time.Now().Format(products.DateFormat)
+		productList.ProductList[i].Updated = time.Now().Format(elasticsearch.DateFormat)
 		productList.ProductList[i].BulkIndex(bulk)
 	}
 

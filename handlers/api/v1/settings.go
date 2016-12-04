@@ -2,9 +2,9 @@ package v1
 
 import (
 	"errors"
-	"github.com/apisearch/importer/handlers/request"
-	"github.com/apisearch/importer/handlers/response"
-	model "github.com/apisearch/importer/model/settings"
+	"github.com/apisearch/apisearch/handlers/request"
+	"github.com/apisearch/apisearch/handlers/response"
+	model "github.com/apisearch/apisearch/model/settings"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strings"

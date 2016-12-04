@@ -6,7 +6,10 @@ import (
 	"gopkg.in/olivere/elastic.v5"
 )
 
-const serverUrl string = "http://localhost:9200"
+const (
+	DateFormat        = "2006-01-02T15:04:05-07:00"
+	serverUrl  string = "http://localhost:9200"
+)
 
 func Ping() {
 	_, _, err := CreateClient().Ping(serverUrl).Do(context.TODO())
@@ -66,7 +69,17 @@ func PutMapping(mapping string, indexName string, typeName string) error {
 
 func DeleteIndex(indexName string) error {
 	client := CreateClient()
-	_, err := client.DeleteIndex(indexName).Do(context.TODO())
+	exists, err := client.IndexExists(indexName).Do(context.TODO())
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		_, err := client.DeleteIndex(indexName).Do(context.TODO())
+
+		return err
+	}
+
+	return nil
 }

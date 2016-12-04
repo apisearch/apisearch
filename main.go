@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/apisearch/importer/commands/elastic"
-	"github.com/apisearch/importer/commands/importer"
-	"github.com/apisearch/importer/routers"
+	"github.com/apisearch/apisearch/commands/elastic"
+	"github.com/apisearch/apisearch/commands/importer"
+	"github.com/apisearch/apisearch/routers"
 	"github.com/urfave/cli"
 	"log"
 	"net/http"

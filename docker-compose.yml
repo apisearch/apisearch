@@ -1,12 +1,8 @@
 version: '2'
 
 services:
-  elasticsearch:
-    image: apisearch/elasticsearch
-    ports:
-      - "9200:9200"
   kibana:
-    image: kibana:5.0.0
+    image: kibana:5.0.2
     ports:
       - "5602:5601"
   cerebro:
@@ -21,3 +17,7 @@ services:
       - "8081:80"
     volumes:
       - ./data:/usr/share/nginx/html
+  elasticsearch:
+    image: apisearch/elasticsearch
+    ports:
+      - "9200:9200"

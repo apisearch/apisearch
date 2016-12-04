@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"github.com/apisearch/importer/log"
+	"github.com/apisearch/apisearch/log"
 	"github.com/gorilla/mux"
 	"net/http"
 )

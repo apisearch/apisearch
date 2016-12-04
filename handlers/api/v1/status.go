@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"github.com/apisearch/importer/handlers/response"
-	"github.com/apisearch/importer/model/elasticsearch"
+	"github.com/apisearch/apisearch/handlers/response"
+	"github.com/apisearch/apisearch/model/elasticsearch"
 	"net/http"
 )
 

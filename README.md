@@ -1,10 +1,10 @@
-# API Search importer
+# apisearch
 
-Microservice used for importing products into database. Part of apisearch project.
+Full text search service which communicates through JSON API.
 
 ### Docs
 
-- [apiary](docs.apisearchimporter.apiary.io)
+- [Apiary docs](docs.apisearchimporter.apiary.io)
 
 ### Dependencies
 
@@ -14,9 +14,10 @@ Microservice used for importing products into database. Part of apisearch projec
 ### Usage
 
 - `docker-compose up -d`
-- Create index: `go run main.go createIndex`
-- Run HTTP server: `go run main.go server`
-- Import products: `go run main.go import`
+- Show usage: `go run main.go`
+- Create index: `go run main.go c`
+- Run HTTP server: `go run main.go s`
+- Import products: `go run main.go i`
 - Sample data: `http://localhost:8081/heureka_cz.xml`
 - Kibana: `http://localhost:5601`
 - Cerebro: `http://localhost:9000`
