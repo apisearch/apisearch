@@ -1,0 +1,43 @@
+FORMAT: 1A
+HOST: http://polls.apiblueprint.org/
+
+
+# apisearch
+
+Full text search service which communicates through JSON API.
+
+
+### Data Structures
+
+#### Settings
+- feedUrl: `http://shop.tld/feed.xml` (string, required) - url of data feed
+- feedFormat: `heureka` (enum[string], required)
+    - `heureka`
+    - `zbozi`
+    - `google`
+    - `json`
+- downloadInterval: `3600` (number, required) - Interval between feeds download in seconds
+
+
+## Status [/api/v1/status]
+
+### Healthz [GET /api/v1/status/healthz]
++ Response 200 (application/json)
+
+
+## Settings [/api/v1/settings/{userId}]
+
+### Get user's settings [GET]
++ Response 200 (application/json)
+    + Attributes (Settings, required)
++ Response 400 (application/json)
+
+### Store user's settings [POST]
++ Request
+    + Attributes (Settings, required)
++ Response 200 (application/json)
++ Response 500 (application/json)
+
+### Delete user's settings [DELETE]
++ Response 200 (application/json)
++ Response 400 (application/json)
