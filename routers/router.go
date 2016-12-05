@@ -11,6 +11,7 @@ type Route struct {
 	Method      string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
+	Queries     []string
 }
 
 type Routes []Route
@@ -27,7 +28,8 @@ func NewRouter() *mux.Router {
 			Methods(route.Method).
 			Path(route.Pattern).
 			Name(route.Name).
-			Handler(handler)
+			Handler(handler).
+			Queries(route.Queries...)
 	}
 
 	return router

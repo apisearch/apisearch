@@ -2,9 +2,13 @@ package request
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func Read(r *http.Request, request interface{}) error {
@@ -23,4 +27,21 @@ func Read(r *http.Request, request interface{}) error {
 	}
 
 	return nil
+}
+
+func GetVarFromRequest(r *http.Request, variable string) (string, error) {
+	var value string
+	var err error
+
+	vars := mux.Vars(r)
+
+	fmt.Printf("%v", vars)
+
+	value = strings.TrimSpace(vars[variable])
+
+	if value == "" {
+		err = errors.New("Empty " + variable)
+	}
+
+	return value, err
 }

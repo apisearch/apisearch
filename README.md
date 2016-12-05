@@ -4,7 +4,7 @@ Full text search service which communicates through JSON API.
 
 ### Docs
 
-- [Apiary docs](docs.apisearchimporter.apiary.io)
+- [Apiary docs](http://docs.apisearch.apiary.io/)
 
 ### Dependencies
 

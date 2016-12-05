@@ -18,7 +18,7 @@ type Product struct {
 }
 
 type ProductList struct {
-	ProductList []Product `xml:"SHOPITEM"`
+	ProductList []Product `xml:"SHOPITEM" json:"products"`
 }
 
 const (
@@ -126,7 +126,21 @@ const (
 				},
 				"description": {
 					"type": "string",
-					"index": "not_analyzed"
+					"index": "not_analyzed",
+					"fields": {
+						"hunspell": {
+							"type": "string",
+							"analyzer": "hunspell"
+						},
+						"icu": {
+							"type": "string",
+							"analyzer": "icu"
+						},
+						"shingle": {
+							"type": "string",
+							"analyzer": "shingle"
+						}
+					}
 				},
 				"url": {
 					"type": "string",

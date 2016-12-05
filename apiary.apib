@@ -16,7 +16,16 @@ Full text search service which communicates through JSON API.
     - `zbozi`
     - `google`
     - `json`
-- downloadInterval: `3600` (number, required) - Interval between feeds download in seconds
+
+#### Product
+- id: `1` (string, required) - ID of product
+- userId: `1` (int, required) - ID of user
+- name: `Postel bílá` (string, required) - Name of product
+- description: `Postel bílá vyrobena z masivu.` (string, required) - Description of product
+- url: `http://domain.tld/1` (string, required) - URL of product detail
+- img: `http://domain.tld/1.jpg` (string, required) - URL of product's image
+- price: `1` (int, required) - Price of product
+- updated: `2016-12-04T23:22:16+01:00` (string, required) - Timestamp of last update
 
 
 ## Status [/api/v1/status]
@@ -41,3 +50,16 @@ Full text search service which communicates through JSON API.
 ### Delete user's settings [DELETE]
 + Response 200 (application/json)
 + Response 400 (application/json)
+
+
+## Search [/api/v1/search{?query}]
+
+### Fulltext search [GET]
++ Parameters
+    + q: `postel` (string, required) - searched query
+    + userId: `1` (int, required) - user id
++ Response 200 (application/json)
+    + Attributes
+        + products (array[Product], required)
++ Response 400 (application/json)
++ Response 503 (application/json)

@@ -9,10 +9,9 @@ import (
 )
 
 type Settings struct {
-	UserId           string `json:"userId"`
-	FeedUrl          string `json:"feedUrl"`
-	FeedFormat       string `json:"feedFormat"`
-	DownloadInterval int    `json:"downloadInterval"`
+	UserId     string `json:"userId"`
+	FeedUrl    string `json:"feedUrl"`
+	FeedFormat string `json:"feedFormat"`
 }
 
 const (
