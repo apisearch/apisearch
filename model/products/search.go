@@ -9,13 +9,20 @@ import (
 	"math"
 )
 
-func Search(_ int, query string, limit int) (ProductList, error) {
+func Search(userId int, query string, limit int) (ProductList, error) {
 	var item Product
 	var productList ProductList
 
 	client := elasticsearch.CreateClient()
 
-	matchQuery := elastic.NewMatchQuery("name.hunspell", query)
+	matchQuery := elastic.NewMultiMatchQuery(query, "name.hunspell^3", "name.icu^3", "name.shingle", "name", "description")
+	matchQuery.TieBreaker(0.3)
+	matchQuery.Type("most_fields")
+
+	userTermQuery := elastic.NewTermQuery("userId", userId)
+
+	boolQuery := elastic.NewBoolQuery()
+	boolQuery.Must(matchQuery, userTermQuery)
 
 	res, err := client.Search(indexName).Query(matchQuery).Size(limit).Do(context.TODO())
 
