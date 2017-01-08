@@ -52,11 +52,11 @@ Full text search service which communicates through JSON API.
 + Response 400 (application/json)
 
 
-## Search [/api/v1/search{?query}]
+## Search [/api/v1/search/{userId}/{query}]
 
 ### Fulltext search [GET]
 + Parameters
-    + q: `postel` (string, required) - searched query
+    + query: `postel` (string, required) - searched query
     + userId: `1` (int, required) - user id
 + Response 200 (application/json)
     + Attributes
