@@ -3,7 +3,6 @@ package request
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -34,8 +33,6 @@ func GetVarFromRequest(r *http.Request, variable string) (string, error) {
 	var err error
 
 	vars := mux.Vars(r)
-
-	fmt.Printf("%v", vars)
 
 	value = strings.TrimSpace(vars[variable])
 

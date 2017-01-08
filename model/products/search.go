@@ -1,28 +1,41 @@
 package products
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/apisearch/apisearch/model/elasticsearch"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
-	"reflect"
+	"math"
 )
 
-func Search(_ int, query string) (*ProductList, error) {
+func Search(_ int, query string, limit int) (ProductList, error) {
+	var item Product
+	var productList ProductList
+
 	client := elasticsearch.CreateClient()
 
 	matchQuery := elastic.NewMatchQuery("name.hunspell", query)
 
-	res, err := client.Search(indexName).Query(matchQuery).Do(context.TODO())
+	res, err := client.Search(indexName).Query(matchQuery).Size(limit).Do(context.TODO())
 
 	if err != nil {
-		return nil, err
+		return productList, err
 	}
 
-	var ptype Product
-	var productList *ProductList
+	productList.ProductList = make([]Product, int(math.Min(float64(limit), float64(res.TotalHits()))))
 
-	for _, item := range res.Each(reflect.TypeOf(ptype)) {
-		productList.ProductList = append(productList.ProductList, item.(Product))
+	i := 0
+
+	for _, hit := range res.Hits.Hits {
+		err = json.Unmarshal(*hit.Source, &item)
+
+		if err != nil {
+			return productList, errors.New("Unable to unmarshall product")
+		}
+
+		productList.ProductList[i] = item
+		i++
 	}
 
 	return productList, nil

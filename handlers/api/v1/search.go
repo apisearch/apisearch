@@ -8,12 +8,14 @@ import (
 	"strconv"
 )
 
+const defaultLimit int = 20
+
 func Search(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var userIdParam string
 	var userId int
 	var query string
-	var productList *products.ProductList
+	var productList products.ProductList
 
 	if userIdParam, err = request.GetVarFromRequest(r, "userId"); err != nil {
 		response.WriteError(w, "User id not set", 400, err)
@@ -33,7 +35,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if productList, err = products.Search(userId, query); err != nil {
+	if productList, err = products.Search(userId, query, defaultLimit); err != nil {
 		response.WriteError(w, "Search failed", 503, err)
 
 		return

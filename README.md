@@ -9,7 +9,7 @@ Full text search service which communicates through JSON API.
 ### Dependencies
 
 - Golang >= 1.6
-- Elasticsearch >= 5.0.0
+- Docker
 
 ### Usage
 

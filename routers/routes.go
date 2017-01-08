@@ -34,8 +34,8 @@ var routes = Routes{
 	Route{
 		"Search",
 		"GET",
-		"/api/v1/search",
+		"/api/v1/search/{userId}/{query}",
 		v1.Search,
-		[]string{"userId", "query"},
+		[]string{},
 	},
 }
