@@ -9,22 +9,36 @@ Full text search service which communicates through JSON API.
 
 ### Data Structures
 
-#### Settings
+#### LoginRequest (object)
+- email: `user@email.com` (string, required) - e-mail address
+- password: `p4ssw0rd` (string, required) - password
+
+#### LoginResponse (object)
+- userId: `01dsdmmwv2dwkdlam8di8` (string, required) - id of user
+- token: `JT0n0rws8rRMx8P205hmc68c9yptDW91PkuLNcHe2J2NxQdyO` (string, required) - token
+
+#### UserRequest (object)
+- email: `user@email.com` (string, optional) - e-mail address used for sign in
+- password: `p4ssw0rd` (string, optional) - new password
+- feedUrl: `http://shop.tld/feed.xml` (string, optional) - url of data feed
+- feedFormat: `heureka` (enum[string], optional)
+    - `heureka`
+
+#### UserResponse (object)
+- id: `01dsdmmwv2dwkdlam8di8` (string, required) - userId
+- email: `user@email.com` (string, required) - e-mail address used for sign in
 - feedUrl: `http://shop.tld/feed.xml` (string, required) - url of data feed
 - feedFormat: `heureka` (enum[string], required)
     - `heureka`
-    - `zbozi`
-    - `google`
-    - `json`
 
-#### Product
+#### Product (object)
 - id: `1` (string, required) - ID of product
-- userId: `1` (int, required) - ID of user
+- userId: `01dsdmmwv2dwkdlam8di8` (string, required) - ID of user
 - name: `Postel bílá` (string, required) - Name of product
 - description: `Postel bílá vyrobena z masivu.` (string, required) - Description of product
 - url: `http://domain.tld/1` (string, required) - URL of product detail
 - img: `http://domain.tld/1.jpg` (string, required) - URL of product's image
-- price: `1` (int, required) - Price of product
+- price: `1` (number, required) - Price of product
 - updated: `2016-12-04T23:22:16+01:00` (string, required) - Timestamp of last update
 
 
@@ -34,32 +48,61 @@ Full text search service which communicates through JSON API.
 + Response 200 (application/json)
 
 
-## Settings [/api/v1/settings/{userId}]
+## User creation [/api/v1/user]
 
-### Get user's settings [GET]
-+ Response 200 (application/json)
-    + Attributes (Settings, required)
-+ Response 400 (application/json)
-
-### Store user's settings [POST]
+### Create new user [POST]
 + Request
-    + Attributes (Settings, required)
+    + Attributes (UserRequest, required)
 + Response 200 (application/json)
++ Response 400 (application/json)
++ Response 500 (application/json)
+
+
+## Auth [/api/v1/auth]
+
+### Sign in [POST /api/v1/auth/signin]
++ Request
+    + Attributes (LoginRequest, required)
++ Response 200 (application/json)
+    + Attributes (LoginResponse, required)
++ Response 400 (application/json)
++ Response 401 (application/json)
++ Response 500 (application/json)
+
+### Sign out [GET /api/v1/auth/signout]
++ Response 200 (application/json)
++ Response 500 (application/json)
+
+
+## User settings [/api/v1/user/{token}]
+
+### Get user's detail [GET]
++ Response 200 (application/json)
+    + Attributes (UserResponse, required)
++ Response 400 (application/json)
++ Response 500 (application/json)
+
+### Store user's settings [PUT]
++ Request
+    + Attributes (UserRequest, required)
++ Response 200 (application/json)
++ Response 400 (application/json)
 + Response 500 (application/json)
 
 ### Delete user's settings [DELETE]
 + Response 200 (application/json)
 + Response 400 (application/json)
++ Response 500 (application/json)
 
 
 ## Search [/api/v1/search/{userId}/{query}]
 
 ### Fulltext search [GET]
 + Parameters
+    + userId: `01dsdmmwv2dwkdlam8di8` (int, required) - user id
     + query: `postel` (string, required) - searched query
-    + userId: `1` (int, required) - user id
 + Response 200 (application/json)
     + Attributes
         + products (array[Product], required)
 + Response 400 (application/json)
-+ Response 503 (application/json)
++ Response 500 (application/json)
