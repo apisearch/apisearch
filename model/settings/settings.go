@@ -2,6 +2,7 @@ package settings
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/apisearch/apisearch/model/elasticsearch"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
@@ -9,66 +10,55 @@ import (
 )
 
 type Settings struct {
-	UserId     string `json:"userId"`
+	UserId     string `json:"-"`
+	Email      string `json:"email"`
+	Token      string `json:"token"`
+	Password   string `json:"password"`
 	FeedUrl    string `json:"feedUrl"`
 	FeedFormat string `json:"feedFormat"`
 }
 
-const (
-	indexName     = "settings"
-	typeName      = "setting"
-	indexSettings = `{
-		"settings": {
-			"number_of_shards": 1,
-			"number_of_replicas": 0
-		}
-	}`
-	typeSettings = `{
-		"setting": {
-			"properties": {
-				"feedUrl": {
-					"type":"string",
-					"index": "no"
-				},
-				"feedFormat": {
-					"type":"string",
-					"index": "no"
-				},
-				"downloadInterval": {
-					"type":"long"
-				}
-			}
-		}
-	}`
-)
-
-func CreateIndex(force bool) error {
+func (s *Settings) Create() (NewUser, error) {
+	client := elasticsearch.CreateClient()
 	var err error
-
-	if force {
-		err = elasticsearch.DeleteIndex(indexName)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	err = elasticsearch.CreateIndex(indexSettings, indexName)
+	s.Password, err = hashPassword(s.Password)
+	s.Token = generateToken()
 
 	if err != nil {
-		return err
+		return NewUser{}, err
 	}
 
-	return elasticsearch.PutMapping(typeSettings, indexName, typeName)
+	var found bool
+	_, found, err = findByEmail(s.Email)
+
+	if err != nil {
+		return NewUser{}, err
+	}
+
+	if found == true {
+		return NewUser{}, errors.New("Email already exists")
+	}
+
+	response, err := client.Index().
+		Index(indexName).
+		Type(typeName).
+		BodyJson(s).
+		Do(context.TODO())
+
+	if response == nil || err != nil {
+		return NewUser{}, err
+	}
+
+	return NewUser{response.Id, s.Token}, nil
 }
 
-func (s *Settings) Upsert() error {
+func (s *Settings) Update(userId string) error {
 	client := elasticsearch.CreateClient()
 
 	response, err := client.Index().
 		Index(indexName).
 		Type(typeName).
-		Id(s.UserId).
+		Id(userId).
 		BodyJson(s).
 		Do(context.TODO())
 
@@ -79,7 +69,23 @@ func (s *Settings) Upsert() error {
 	return nil
 }
 
-func (s *Settings) GetByUserId(userId string) (bool, error) {
+func (s *Settings) Remove(userId string) (bool, error) {
+	client := elasticsearch.CreateClient()
+
+	res, err := client.Delete().Index(indexName).Type(typeName).Id(userId).Do(context.TODO())
+
+	if err != nil {
+		return false, err
+	}
+
+	if res.Found != true {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (s *Settings) Find(userId string) (bool, error) {
 	client := elasticsearch.CreateClient()
 
 	res, err := client.Get().Index(indexName).Type(typeName).Id(userId).Do(context.TODO())
@@ -99,23 +105,7 @@ func (s *Settings) GetByUserId(userId string) (bool, error) {
 	return true, nil
 }
 
-func (s *Settings) RemoveByUserId(userId string) (bool, error) {
-	client := elasticsearch.CreateClient()
-
-	res, err := client.Delete().Index(indexName).Type(typeName).Id(userId).Do(context.TODO())
-
-	if err != nil {
-		return false, err
-	}
-
-	if res.Found != true {
-		return false, nil
-	}
-
-	return true, nil
-}
-
-func (s *Settings) GetAll() ([]Settings, error) {
+func (s *Settings) FindAll() ([]Settings, error) {
 	client := elasticsearch.CreateClient()
 
 	res, err := client.Search().Index(indexName).Query(elastic.NewMatchAllQuery()).Size(10000).Do(context.TODO())
@@ -127,11 +117,31 @@ func (s *Settings) GetAll() ([]Settings, error) {
 	var ttyp Settings
 	var result = []Settings{}
 
-	for _, item := range res.Each(reflect.TypeOf(ttyp)) {
+	for id, item := range res.Each(reflect.TypeOf(ttyp)) {
 		if s, ok := item.(Settings); ok {
+			s.UserId = string(id)
 			result = append(result, s)
 		}
 	}
 
 	return result, nil
+}
+
+func findByEmail(email string) (Settings, bool, error) {
+	client := elasticsearch.CreateClient()
+	var ttyp Settings
+	res, err := client.Search().Index(indexName).Query(elastic.NewTermQuery("email", email)).Do(context.TODO())
+
+	if err != nil {
+		return ttyp, false, err
+	}
+
+	for id, item := range res.Each(reflect.TypeOf(ttyp)) {
+		if s, ok := item.(Settings); ok {
+			s.UserId = string(id)
+			return s, true, nil
+		}
+	}
+
+	return ttyp, false, nil
 }

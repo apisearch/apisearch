@@ -41,6 +41,15 @@ Full text search service which communicates through JSON API.
 - price: `1` (number, required) - Price of product
 - updated: `2016-12-04T23:22:16+01:00` (string, required) - Timestamp of last update
 
+#### Ok (object)
+- status: `200` (number, required) - HTTP status code
+- message: `User created` (string, optional) - Result message
+
+#### Error (object)
+- status: `400` (number, required) - HTTP status code
+- message: `Unable to create user` (string, required) - Error message
+- description: `Email already exists` (string, optional) - Additional description to message
+
 
 ## Status [/api/v1/status]
 
@@ -54,24 +63,26 @@ Full text search service which communicates through JSON API.
 + Request
     + Attributes (UserRequest, required)
 + Response 200 (application/json)
+    + Attributes (Ok, required)
 + Response 400 (application/json)
-+ Response 500 (application/json)
+    + Attributes (Error, required)
 
 
-## Auth [/api/v1/auth]
+## Auth [/api/v1/sign]
 
-### Sign in [POST /api/v1/auth/signin]
+### Sign in [POST /api/v1/sign/in]
 + Request
     + Attributes (LoginRequest, required)
 + Response 200 (application/json)
     + Attributes (LoginResponse, required)
 + Response 400 (application/json)
-+ Response 401 (application/json)
-+ Response 500 (application/json)
+    + Attributes (Error, required)
 
-### Sign out [GET /api/v1/auth/signout]
+### Sign out [GET /api/v1/sign/out]
 + Response 200 (application/json)
-+ Response 500 (application/json)
+    + Attributes (Ok, required)
++ Response 400 (application/json)
+    + Attributes (Error, required)
 
 
 ## User settings [/api/v1/user/{token}]
@@ -80,19 +91,21 @@ Full text search service which communicates through JSON API.
 + Response 200 (application/json)
     + Attributes (UserResponse, required)
 + Response 400 (application/json)
-+ Response 500 (application/json)
+    + Attributes (Error, required)
 
 ### Store user's settings [PUT]
 + Request
     + Attributes (UserRequest, required)
 + Response 200 (application/json)
+    + Attributes (Ok, required)
 + Response 400 (application/json)
-+ Response 500 (application/json)
+    + Attributes (Error, required)
 
 ### Delete user's settings [DELETE]
 + Response 200 (application/json)
+    + Attributes (Ok, required)
 + Response 400 (application/json)
-+ Response 500 (application/json)
+    + Attributes (Error, required)
 
 
 ## Search [/api/v1/search/{userId}/{query}]
@@ -105,4 +118,4 @@ Full text search service which communicates through JSON API.
     + Attributes
         + products (array[Product], required)
 + Response 400 (application/json)
-+ Response 500 (application/json)
+    + Attributes (Error, required)

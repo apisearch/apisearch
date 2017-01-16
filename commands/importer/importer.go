@@ -17,7 +17,7 @@ func ImportXmlFiles() {
 	var allSettings = []model.Settings{}
 	var err error
 
-	allSettings, err = settings.GetAll()
+	allSettings, err = settings.FindAll()
 
 	if err != nil {
 		log.Println("Unable to load stats!")
