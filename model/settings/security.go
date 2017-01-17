@@ -2,7 +2,9 @@ package settings
 
 import (
 	"errors"
+	"github.com/apisearch/apisearch/model/elasticsearch"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
 	"math/rand"
 	"time"
 )
@@ -38,6 +40,29 @@ func SignIn(input SignInData) (NewUser, error) {
 	response.Token = found.Token
 
 	return response, nil
+}
+
+func (s *Settings) SignOut() error {
+	client := elasticsearch.CreateClient()
+
+	s.Token = generateToken()
+
+	response, err := client.Index().
+		Index(indexName).
+		Type(typeName).
+		Id(s.UserId).
+		BodyJson(s).
+		Do(context.TODO())
+
+	if err != nil {
+		return err
+	}
+
+	if response == nil {
+		return errors.New("Empty response from DB")
+	}
+
+	return nil
 }
 
 func generateToken() string {

@@ -26,3 +26,36 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteOkWithBody(w, newUser)
 }
+
+func SignOut(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var token string
+	var found bool
+	var settings model.Settings
+
+	if token, err = request.GetVarFromRequest(r, "token"); err != nil {
+		response.WriteError(w, "User id not set", 400, err)
+
+		return
+	}
+
+	if found, err = settings.FindByToken(token); err != nil {
+		response.WriteError(w, "Unable to get settings", 400, err)
+
+		return
+	}
+
+	if !found {
+		response.WriteError(w, "No user found", 400, err)
+
+		return
+	}
+
+	if err = settings.SignOut(); err != nil {
+		response.WriteError(w, "Unable to sign in", 400, err)
+
+		return
+	}
+
+	response.WriteOk(w, "Signed out")
+}

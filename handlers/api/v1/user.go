@@ -61,7 +61,7 @@ func UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !found {
-		response.WriteError(w, "No settings found", 400, err)
+		response.WriteError(w, "No user found", 400, err)
 
 		return
 	}
@@ -121,7 +121,7 @@ func DeleteSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !found {
-		response.WriteError(w, "No settings found", 400, err)
+		response.WriteError(w, "No user found", 400, err)
 
 		return
 	}

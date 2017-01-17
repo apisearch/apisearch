@@ -46,6 +46,13 @@ var routes = Routes{
 		[]string{},
 	},
 	Route{
+		"SignOut",
+		"GET",
+		"/api/v1/sign/out/{token}",
+		v1.SignOut,
+		[]string{},
+	},
+	Route{
 		"Search",
 		"GET",
 		"/api/v1/search/{userId}/{query}",
