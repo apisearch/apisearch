@@ -27,14 +27,14 @@ var routes = Routes{
 	Route{
 		"UpdateSettings",
 		"POST",
-		"/api/v1/user/{userId}",
+		"/api/v1/user/{token}",
 		v1.UpdateSettings,
 		[]string{},
 	},
 	Route{
 		"DeleteSettings",
 		"DELETE",
-		"/api/v1/user/{userId}",
+		"/api/v1/user/{token}",
 		v1.DeleteSettings,
 		[]string{},
 	},

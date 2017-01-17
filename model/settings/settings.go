@@ -52,13 +52,26 @@ func (s *Settings) Create() (NewUser, error) {
 	return NewUser{response.Id, s.Token}, nil
 }
 
-func (s *Settings) Update(userId string) error {
+func (s *Settings) Update(newSettings Settings) error {
 	client := elasticsearch.CreateClient()
+	var err error
+
+	s.FeedUrl = newSettings.FeedUrl
+	s.FeedFormat = newSettings.FeedFormat
+	s.Email = newSettings.Email
+
+	if s.Password != "" {
+		s.Password, err = hashPassword(s.Password)
+
+		if err != nil {
+			return err
+		}
+	}
 
 	response, err := client.Index().
 		Index(indexName).
 		Type(typeName).
-		Id(userId).
+		Id(s.UserId).
 		BodyJson(s).
 		Do(context.TODO())
 
@@ -69,10 +82,10 @@ func (s *Settings) Update(userId string) error {
 	return nil
 }
 
-func (s *Settings) Remove(userId string) (bool, error) {
+func (s *Settings) Remove() (bool, error) {
 	client := elasticsearch.CreateClient()
 
-	res, err := client.Delete().Index(indexName).Type(typeName).Id(userId).Do(context.TODO())
+	res, err := client.Delete().Index(indexName).Type(typeName).Id(s.UserId).Do(context.TODO())
 
 	if err != nil {
 		return false, err

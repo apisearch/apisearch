@@ -36,23 +36,37 @@ func CreateSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateSettings(w http.ResponseWriter, r *http.Request) {
-	var settings model.Settings
+	var s model.Settings
+	var old model.Settings
 	var err error
-	var userId string
+	var token string
+	var found bool
 
-	if err = request.Read(r, &settings); err != nil {
+	if err = request.Read(r, &s); err != nil {
 		response.WriteError(w, "Failed to parse input", 400, err)
 
 		return
 	}
 
-	if userId, err = request.GetVarFromRequest(r, "userId"); err != nil {
+	if token, err = request.GetVarFromRequest(r, "token"); err != nil {
 		response.WriteError(w, "User id not set", 400, err)
 
 		return
 	}
 
-	if err = settings.Update(userId); err != nil {
+	if found, err = old.FindByToken(token); err != nil {
+		response.WriteError(w, "Unable to get settings", 400, err)
+
+		return
+	}
+
+	if !found {
+		response.WriteError(w, "No settings found", 400, err)
+
+		return
+	}
+
+	if err = old.Update(s); err != nil {
 		response.WriteError(w, "Unable to save settings", 400, err)
 
 		return
@@ -91,16 +105,28 @@ func GetSettingsByToken(w http.ResponseWriter, r *http.Request) {
 func DeleteSettings(w http.ResponseWriter, r *http.Request) {
 	var settings model.Settings
 	var err error
-	var userId string
+	var token string
 	var found bool
 
-	if userId, err = request.GetVarFromRequest(r, "userId"); err != nil {
+	if token, err = request.GetVarFromRequest(r, "token"); err != nil {
 		response.WriteError(w, "User id not set", 400, err)
 
 		return
 	}
 
-	if found, err = settings.Remove(userId); err != nil {
+	if found, err = settings.FindByToken(token); err != nil {
+		response.WriteError(w, "Unable to get settings", 400, err)
+
+		return
+	}
+
+	if !found {
+		response.WriteError(w, "No settings found", 400, err)
+
+		return
+	}
+
+	if found, err = settings.Remove(); err != nil {
 		response.WriteError(w, "Unable to get settings", 400, err)
 
 		return
