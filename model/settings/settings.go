@@ -127,6 +127,29 @@ func (s *Settings) FindAll() ([]Settings, error) {
 	return result, nil
 }
 
+func (s *Settings) FindByToken(token string) (bool, error) {
+	client := elasticsearch.CreateClient()
+	res, err := client.Search().Index(indexName).Query(elastic.NewTermQuery("token", token)).Do(context.TODO())
+
+	if err != nil {
+		return false, err
+	}
+
+	for _, hit := range res.Hits.Hits {
+		err := json.Unmarshal(*hit.Source, &s)
+
+		if err != nil {
+			return false, err
+		}
+
+		s.UserId = hit.Id
+
+		return true, nil
+	}
+
+	return false, nil
+}
+
 func findByEmail(email string) (Settings, bool, error) {
 	client := elasticsearch.CreateClient()
 	var ttyp Settings

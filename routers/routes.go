@@ -11,10 +11,10 @@ var routes = Routes{
 		[]string{},
 	},
 	Route{
-		"GetSettingsByUserId",
+		"GetSettingsByToken",
 		"GET",
-		"/api/v1/user/{userId}",
-		v1.GetSettingsById,
+		"/api/v1/user/{token}",
+		v1.GetSettingsByToken,
 		[]string{},
 	},
 	Route{

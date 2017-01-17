@@ -7,6 +7,14 @@ import (
 	"net/http"
 )
 
+type userDetail struct {
+	Id         string `json:"id"`
+	Token      string `json:"token"`
+	Email      string `json:"email"`
+	FeedUrl    string `json:"feedUrl"`
+	FeedFormat string `json:"feedFormat"`
+}
+
 func CreateSettings(w http.ResponseWriter, r *http.Request) {
 	var settings model.Settings
 	var err error
@@ -53,31 +61,31 @@ func UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	response.WriteOk(w, "Settings saved")
 }
 
-func GetSettingsById(w http.ResponseWriter, r *http.Request) {
-	var settings model.Settings
+func GetSettingsByToken(w http.ResponseWriter, r *http.Request) {
+	var s model.Settings
 	var err error
-	var userId string
+	var token string
 	var found bool
 
-	if userId, err = request.GetVarFromRequest(r, "userId"); err != nil {
+	if token, err = request.GetVarFromRequest(r, "token"); err != nil {
 		response.WriteError(w, "User id not set", 400, err)
 
 		return
 	}
 
-	if found, err = settings.Find(userId); err != nil {
+	if found, err = s.FindByToken(token); err != nil {
 		response.WriteError(w, "Unable to get settings", 400, err)
 
 		return
 	}
 
 	if !found {
-		response.WriteError(w, "Settings not found", http.StatusNotFound, err)
+		response.WriteError(w, "Settings not found", 400, err)
 
 		return
 	}
 
-	response.WriteOkWithBody(w, settings)
+	response.WriteOkWithBody(w, userDetail{s.UserId, s.Token, s.Email, s.FeedUrl, s.FeedUrl})
 }
 
 func DeleteSettings(w http.ResponseWriter, r *http.Request) {

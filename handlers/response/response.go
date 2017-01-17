@@ -17,7 +17,12 @@ type SuccessResponse struct {
 }
 
 func WriteError(w http.ResponseWriter, message string, status int, err error) {
-	response := ErrorResponse{status, message, err.Error()}
+	response := ErrorResponse{status, message, ""}
+
+	if err != nil {
+		response.Description = err.Error()
+	}
+
 	Write(w, status, response)
 }
 

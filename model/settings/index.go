@@ -20,7 +20,7 @@ const (
 				},
 				"token": {
 					"type":"string",
-					"index": "no"
+					"index": "not_analyzed"
 				},
 				"password": {
 					"type":"string",

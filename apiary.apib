@@ -15,7 +15,7 @@ Full text search service which communicates through JSON API.
 
 #### LoginResponse (object)
 - userId: `01dsdmmwv2dwkdlam8di8` (string, required) - id of user
-- token: `JT0n0rws8rRMx8P205hmc68c9yptDW91PkuLNcHe2J2NxQdyO` (string, required) - token
+- token: `JT0n0rws8rRMx8P205hmc68c9yptDW91PkuLNcHe2J2NxQdyO` (string, required) - auth token
 
 #### UserRequest (object)
 - email: `user@email.com` (string, optional) - e-mail address used for sign in
@@ -26,6 +26,7 @@ Full text search service which communicates through JSON API.
 
 #### UserResponse (object)
 - id: `01dsdmmwv2dwkdlam8di8` (string, required) - userId
+- token: `7Tnl6xPQhVPiv80ryboo4iTckqXVuG4xjWFXTC1mzU3EaGY5` (string, required) - security token
 - email: `user@email.com` (string, required) - e-mail address used for sign in
 - feedUrl: `http://shop.tld/feed.xml` (string, required) - url of data feed
 - feedFormat: `heureka` (enum[string], required)
