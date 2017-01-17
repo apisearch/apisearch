@@ -130,17 +130,23 @@ func (s *Settings) FindAll() ([]Settings, error) {
 func findByEmail(email string) (Settings, bool, error) {
 	client := elasticsearch.CreateClient()
 	var ttyp Settings
+	var s Settings
 	res, err := client.Search().Index(indexName).Query(elastic.NewTermQuery("email", email)).Do(context.TODO())
 
 	if err != nil {
 		return ttyp, false, err
 	}
 
-	for id, item := range res.Each(reflect.TypeOf(ttyp)) {
-		if s, ok := item.(Settings); ok {
-			s.UserId = string(id)
-			return s, true, nil
+	for _, hit := range res.Hits.Hits {
+		err := json.Unmarshal(*hit.Source, &s)
+
+		if err != nil {
+			return ttyp, false, err
 		}
+
+		s.UserId = hit.Id
+
+		return s, true, nil
 	}
 
 	return ttyp, false, nil

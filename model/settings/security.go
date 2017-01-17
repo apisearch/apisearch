@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"time"
@@ -11,7 +12,33 @@ type NewUser struct {
 	Token  string `json:"token"`
 }
 
+type SignInData struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 const tokenLen int = 48
+
+func SignIn(input SignInData) (NewUser, error) {
+	var response NewUser
+
+	found, _, err := findByEmail(input.Email)
+
+	if err != nil {
+		return response, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(found.Password), []byte(input.Password))
+
+	if err != nil {
+		return response, errors.New("Invalid e-mail or password")
+	}
+
+	response.UserId = found.UserId
+	response.Token = found.Token
+
+	return response, nil
+}
 
 func generateToken() string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
@@ -34,8 +61,3 @@ func hashPassword(password string) (string, error) {
 
 	return string(hashedPassword), nil
 }
-
-//func verifyPassword() {
-// err = bcrypt.CompareHashAndPassword(hashedPassword, password)
-// fmt.Println(err) // nil means it is a match
-//}

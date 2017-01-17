@@ -39,6 +39,13 @@ var routes = Routes{
 		[]string{},
 	},
 	Route{
+		"SignIn",
+		"POST",
+		"/api/v1/sign/in",
+		v1.SignIn,
+		[]string{},
+	},
+	Route{
 		"Search",
 		"GET",
 		"/api/v1/search/{userId}/{query}",
