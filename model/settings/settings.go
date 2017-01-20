@@ -6,7 +6,6 @@ import (
 	"github.com/apisearch/apisearch/model/elasticsearch"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
-	"reflect"
 )
 
 type Settings struct {
@@ -127,13 +126,14 @@ func (s *Settings) FindAll() ([]Settings, error) {
 		return nil, err
 	}
 
-	var ttyp Settings
 	var result = []Settings{}
 
-	for id, item := range res.Each(reflect.TypeOf(ttyp)) {
-		if s, ok := item.(Settings); ok {
-			s.UserId = string(id)
-			result = append(result, s)
+	for _, hit := range res.Hits.Hits {
+		err = json.Unmarshal(*hit.Source, &s)
+
+		if err == nil {
+			s.UserId = hit.Id
+			result = append(result, *s)
 		}
 	}
 

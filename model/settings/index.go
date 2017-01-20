@@ -15,24 +15,19 @@ const (
 		"setting": {
 			"properties": {
 				"email": {
-					"type": "string",
-					"index": "not_analyzed"
+					"type": "keyword"
 				},
 				"token": {
-					"type":"string",
-					"index": "not_analyzed"
+					"type":"keyword"
 				},
 				"password": {
-					"type":"string",
-					"index": "no"
+					"type":"keyword"
 				},
 				"feedUrl": {
-					"type":"string",
-					"index": "no"
+					"type":"keyword"
 				},
 				"feedFormat": {
-					"type":"string",
-					"index": "no"
+					"type":"keyword"
 				}
 			}
 		}

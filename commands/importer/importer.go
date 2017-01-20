@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -16,6 +17,8 @@ func ImportXmlFiles() {
 	var settings model.Settings
 	var allSettings = []model.Settings{}
 	var err error
+	var imported int
+	var message string
 
 	allSettings, err = settings.FindAll()
 
@@ -24,13 +27,19 @@ func ImportXmlFiles() {
 	} else {
 		for _, s := range allSettings {
 			log.Println("Importing user #" + s.UserId + " from url " + s.FeedUrl + "...")
-			importXmlFile(s)
-			log.Println("Import of user #" + s.UserId + " from url " + s.FeedUrl + " finished")
+			imported, err = importXmlFile(s)
+			message = "Import of user #" + s.UserId + " from url " + s.FeedUrl
+
+			if err != nil {
+				log.Println(message + " failed: " + err.Error())
+			} else {
+				log.Println(message + " finished: stored " + strconv.Itoa(imported) + " products")
+			}
 		}
 	}
 }
 
-func importXmlFile(s model.Settings) error {
+func importXmlFile(s model.Settings) (int, error) {
 	var productList products.ProductList
 	var err error
 
@@ -39,7 +48,7 @@ func importXmlFile(s model.Settings) error {
 	if err != nil {
 		log.Println("Unable to get xml file!")
 
-		return err
+		return 0, err
 	}
 
 	bytes, err := ioutil.ReadAll(resp.Body)
@@ -47,7 +56,7 @@ func importXmlFile(s model.Settings) error {
 	if err != nil {
 		log.Println("Unable to read xml file!")
 
-		return err
+		return 0, err
 	}
 
 	defer resp.Body.Close()
@@ -57,7 +66,7 @@ func importXmlFile(s model.Settings) error {
 	if err != nil {
 		log.Println("Unable to unmarshall xml file!")
 
-		return err
+		return 0, err
 	}
 
 	var firstUpdated string = time.Now().Format(elasticsearch.DateFormat)
@@ -75,5 +84,5 @@ func importXmlFile(s model.Settings) error {
 
 	err = products.BulkFlush(bulk)
 
-	return nil
+	return len(productList.ProductList), nil
 }

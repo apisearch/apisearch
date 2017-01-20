@@ -100,55 +100,50 @@ const (
 		"product": {
 			"properties": {
 				"id": {
-					"type": "string",
-					"index": "not_analyzed"
+					"type": "keyword"
 				},
 				"userId": {
-					"type": "integer"
+					"type": "keyword"
 				},
 				"name": {
-					"type": "string",
-					"index": "not_analyzed",
+					"type": "keyword",
 					"fields": {
 						"hunspell": {
-							"type": "string",
+							"type": "text",
 							"analyzer": "hunspell"
 						},
 						"icu": {
-							"type": "string",
+							"type": "text",
 							"analyzer": "icu"
 						},
 						"shingle": {
-							"type": "string",
+							"type": "text",
 							"analyzer": "shingle"
 						}
 					}
 				},
 				"description": {
-					"type": "string",
-					"index": "not_analyzed",
+					"type": "keyword",
 					"fields": {
 						"hunspell": {
-							"type": "string",
+							"type": "text",
 							"analyzer": "hunspell"
 						},
 						"icu": {
-							"type": "string",
+							"type": "text",
 							"analyzer": "icu"
 						},
 						"shingle": {
-							"type": "string",
+							"type": "text",
 							"analyzer": "shingle"
 						}
 					}
 				},
 				"url": {
-					"type": "string",
-					"index": "not_analyzed"
+					"type": "keyword"
 				},
 				"img": {
-					"type": "string",
-					"index": "not_analyzed"
+					"type": "keyword"
 				},
 				"price": {
 					"type": "float"
