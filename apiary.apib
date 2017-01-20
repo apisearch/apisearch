@@ -80,6 +80,8 @@ Full text search service which communicates through JSON API.
     + Attributes (Error, required)
 
 ### Sign out [GET /api/v1/sign/out/{token}]
++ Parameters
+    + token: `01dsdmmwv2dwkdlam8di801dsdmmwv2dwkdlam8di8` (string, required) - security token
 + Response 200 (application/json)
     + Attributes (Ok, required)
 + Response 400 (application/json)
@@ -89,6 +91,8 @@ Full text search service which communicates through JSON API.
 ## User settings [/api/v1/user/{token}]
 
 ### Get user's detail [GET]
++ Parameters
+    + token: `01dsdmmwv2dwkdlam8di801dsdmmwv2dwkdlam8di8` (string, required) - security token
 + Response 200 (application/json)
     + Attributes (UserResponse, required)
 + Response 400 (application/json)
