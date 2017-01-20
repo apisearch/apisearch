@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-const defaultLimit int = 20
+const defaultLimit int = 50
 
 func Search(w http.ResponseWriter, r *http.Request) {
 	var err error
