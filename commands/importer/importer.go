@@ -27,7 +27,7 @@ func ImportXmlFiles() {
 	} else {
 		for _, s := range allSettings {
 			log.Println("Importing user #" + s.UserId + " from url " + s.FeedUrl + "...")
-			imported, err = importXmlFile(s)
+			imported, err = ImportXmlFile(s)
 			message = "Import of user #" + s.UserId + " from url " + s.FeedUrl
 
 			if err != nil {
@@ -39,7 +39,7 @@ func ImportXmlFiles() {
 	}
 }
 
-func importXmlFile(s model.Settings) (int, error) {
+func ImportXmlFile(s model.Settings) (int, error) {
 	var productList products.ProductList
 	var err error
 

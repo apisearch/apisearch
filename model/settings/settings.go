@@ -48,6 +48,10 @@ func (s *Settings) Create() (NewUser, error) {
 		return NewUser{}, err
 	}
 
+	s.UserId = response.Id
+
+	client.Refresh(indexName)
+
 	return NewUser{response.Id, s.Token}, nil
 }
 

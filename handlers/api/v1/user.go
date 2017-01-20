@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/apisearch/apisearch/commands/importer"
 	"github.com/apisearch/apisearch/handlers/request"
 	"github.com/apisearch/apisearch/handlers/response"
 	model "github.com/apisearch/apisearch/model/settings"
@@ -31,6 +32,8 @@ func CreateSettings(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	go importer.ImportXmlFile(settings)
 
 	response.WriteOkWithBody(w, newUser)
 }
