@@ -9,7 +9,7 @@ import (
 	"math"
 )
 
-func Search(userId int, query string, limit int) (ProductList, error) {
+func Search(userId string, query string, limit int) (ProductList, error) {
 	var item Product
 	var productList ProductList
 
