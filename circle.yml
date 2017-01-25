@@ -9,23 +9,10 @@ machine:
     CGO_ENABLED: 0
     GOOS: linux
 
-#general:
-#  build_dir: ../.go_workspace/src/$IMPORT_PATH
-
-#checkout:
-#  post:
-#    - mkdir -p "$GOPATH/src/$IMPORT_PATH"
-#    - rsync -azC --delete $HOME/$CIRCLE_PROJECT_REPONAME/ $GOPATH/src/$IMPORT_PATH/
-
 dependencies:
-#  pre:
-#    - go get -d ./...
-#    - go get github.com/tools/godep
-#  override:
-#    - mkdir -p "$GOPATH/$IMPORT_PATH"
-#    - rsync -azC --delete ./ "$GOPATH/$IMPORT_PATH"
-#    - godep restore
-  post:
+  pre:
+    - go get -t -d -v ./...
+  override:
     - go build -a -installsuffix cgo -o apisearch .
     - docker build -t apisearch/apisearch .
 
