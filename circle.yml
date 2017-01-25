@@ -14,8 +14,15 @@ dependencies:
     - go get -t -d -v ./...
   override:
     - go build -a -installsuffix cgo -o apisearch .
-    - docker build -t apisearch/apisearch .
+    - docker build --rm=false -t apisearch/apisearch .
 
 test:
   override:
     - docker run --rm apisearch/apisearch
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e ludek.vesely@email.com -u ludekvesely -p $DOCKER_PASS
+      - docker push apisearch/apisearch
