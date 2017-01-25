@@ -10,7 +10,7 @@ machine:
     GOOS: linux
 
 general:
-  build_dir: $GOPATH/src/$IMPORT_PATH
+  build_dir: ../.go_workspace/src/$IMPORT_PATH
 
 checkout:
   post:
