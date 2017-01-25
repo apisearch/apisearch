@@ -4,15 +4,26 @@ import (
 	"errors"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
+	"os"
 )
 
 const (
-	DateFormat        = "2006-01-02T15:04:05-07:00"
-	serverUrl  string = "http://localhost:9200"
+	DateFormat             = "2006-01-02T15:04:05-07:00"
+	serverUrl       string = "http://localhost:9200"
+	serverUrlDocker string = "http://elasticsearch:9200"
 )
 
 func Ping() {
-	_, _, err := CreateClient().Ping(serverUrl).Do(context.TODO())
+	var err error
+	var url string
+
+	if os.Getenv("DOCKER") == "true" {
+		url = serverUrlDocker
+	} else {
+		url = serverUrl
+	}
+
+	_, _, err = CreateClient().Ping(url).Do(context.TODO())
 
 	if err != nil {
 		panic(err)
@@ -20,7 +31,16 @@ func Ping() {
 }
 
 func CreateClient() *elastic.Client {
-	client, err := elastic.NewClient(elastic.SetURL(serverUrl))
+	var err error
+	var url string
+
+	if os.Getenv("DOCKER") == "true" {
+		url = serverUrlDocker
+	} else {
+		url = serverUrl
+	}
+
+	client, err := elastic.NewClient(elastic.SetURL(url))
 
 	if err != nil {
 		panic(err)
