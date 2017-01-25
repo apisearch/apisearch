@@ -1,0 +1,30 @@
+machine:
+  pre:
+    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
+  services:
+    - docker
+  environment:
+    GOPATH: /home/ubuntu/.go_workspace
+    IMPORT_PATH: github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+    CGO_ENABLED: 0
+    GOOS: linux
+
+general:
+  build_dir: $GOPATH/src/$IMPORT_PATH
+
+checkout:
+  post:
+    - mkdir -p "$GOPATH/src/$IMPORT_PATH"
+    - rsync -azC --delete $HOME/$CIRCLE_PROJECT_REPONAME/ $GOPATH/src/$IMPORT_PATH/
+
+dependencies:
+  pre:
+    - go get github.com/tools/godep
+  override:
+    - godep restore
+    - godep go build -a -installsuffix cgo -o apisearch .
+    - docker build -t apisearch/apisearch .
+
+test:
+  override:
+    - docker run --rm apisearch/apisearch
