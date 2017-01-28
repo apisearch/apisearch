@@ -26,3 +26,4 @@ deployment:
     commands:
       - docker login -e ludek.vesely@email.com -u ludekvesely -p $DOCKER_PASS
       - docker push apisearch/apisearch
+      - ssh root@apisearch.ludekvesely.cz 'cd apisearch && docker-compose -f docker-compose.prod.yml pull apisearch && docker-compose -f docker-compose.prod.yml up -d apisearch'
