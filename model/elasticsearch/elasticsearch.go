@@ -15,15 +15,8 @@ const (
 
 func Ping() {
 	var err error
-	var url string
 
-	if os.Getenv("DOCKER") == "true" {
-		url = serverUrlDocker
-	} else {
-		url = serverUrl
-	}
-
-	_, _, err = CreateClient().Ping(url).Do(context.TODO())
+	_, _, err = CreateClient().Ping(getEsUrl()).Do(context.TODO())
 
 	if err != nil {
 		panic(err)
@@ -32,15 +25,8 @@ func Ping() {
 
 func CreateClient() *elastic.Client {
 	var err error
-	var url string
 
-	if os.Getenv("DOCKER") == "true" {
-		url = serverUrlDocker
-	} else {
-		url = serverUrl
-	}
-
-	client, err := elastic.NewClient(elastic.SetURL(url))
+	client, err := elastic.NewClient(elastic.SetURL(getEsUrl()), elastic.SetSniff(false))
 
 	if err != nil {
 		panic(err)
@@ -102,4 +88,12 @@ func DeleteIndex(indexName string) error {
 	}
 
 	return nil
+}
+
+func getEsUrl() string {
+	if os.Getenv("DOCKER") == "true" {
+		return serverUrlDocker
+	} else {
+		return serverUrl
+	}
 }
