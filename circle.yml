@@ -18,7 +18,7 @@ dependencies:
 
 test:
   override:
-    - docker run --rm apisearch/apisearch
+    - docker run apisearch/apisearch
 
 deployment:
   hub:
