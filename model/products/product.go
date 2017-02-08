@@ -21,6 +21,10 @@ type ProductList struct {
 	ProductList []Product `xml:"SHOPITEM" json:"products"`
 }
 
+type SuggestedTerms struct {
+	Terms []string `json:"terms"`
+}
+
 const (
 	indexName     = "products"
 	typeName      = "product"
@@ -58,6 +62,14 @@ const (
 					"min_length": {
 						"type": "length",
 						"min": 2
+					},
+					"min_word_length": {
+						"type": "length",
+						"min": 4
+					},
+					"lowercase": {
+						"type": "lowercase",
+						"min": 4
 					}
 				},
 				"analyzer": {
@@ -91,6 +103,15 @@ const (
 							"unique"
 						],
 						"tokenizer": "standard"
+					},
+					"words": {
+						"filter": [
+							"min_word_length",
+							"stopwords",
+							"lowercase",
+							"unique"
+						],
+						"tokenizer": "standard"
 					}
 				}
 			}
@@ -119,6 +140,11 @@ const (
 						"shingle": {
 							"type": "text",
 							"analyzer": "shingle"
+						},
+						"words": {
+							"type": "text",
+							"analyzer": "words",
+							"fielddata": true
 						}
 					}
 				},

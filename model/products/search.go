@@ -63,3 +63,24 @@ func Search(userId string, query string, limit int) (ProductList, error) {
 
 	return productList, nil
 }
+
+func SuggestTerms(userId string) (SuggestedTerms, error) {
+	var terms SuggestedTerms
+	query := elastic.NewTermQuery("userId", userId)
+	client := elasticsearch.CreateClient()
+	agg := elastic.NewTermsAggregation().Field("name.words")
+	res, err := client.Search(indexName).Query(query).Aggregation("terms", agg).Size(0).Do(context.TODO())
+
+	if err != nil {
+		return terms, err
+	}
+
+	terms.Terms = make([]string, 10)
+	buckets, _ := res.Aggregations.Terms("terms")
+
+	for i, bucket := range buckets.Buckets {
+		terms.Terms[i] = string(bucket.Key.(string))
+	}
+
+	return terms, nil
+}

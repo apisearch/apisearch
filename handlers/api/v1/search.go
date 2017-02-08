@@ -35,3 +35,23 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteOkWithBody(w, productList)
 }
+
+func SearchSuggestions(w http.ResponseWriter, r *http.Request) {
+	var err error
+	var userId string
+	var terms products.SuggestedTerms
+
+	if userId, err = request.GetVarFromRequest(r, "userId"); err != nil {
+		response.WriteError(w, "User id not set", 400, err)
+
+		return
+	}
+
+	if terms, err = products.SuggestTerms(userId); err != nil {
+		response.WriteError(w, "Search failed", 503, err)
+
+		return
+	}
+
+	response.WriteOkWithBody(w, terms)
+}

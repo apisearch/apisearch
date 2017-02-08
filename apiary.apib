@@ -124,3 +124,15 @@ Full text search service which communicates through JSON API.
         + products (array[Product], required)
 + Response 400 (application/json)
     + Attributes (Error, required)
+
+
+## Suggest common terms [/api/v1/search-suggestions/{userId}]
+
+### Search for terms suggestions [GET]
++ Parameters
+    + userId: `01dsdmmwv2dwkdlam8di8` (int, required) - user id
++ Response 200 (application/json)
+    + Attributes
+        + terms (array[string], required)
++ Response 400 (application/json)
+    + Attributes (Error, required)

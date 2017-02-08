@@ -59,4 +59,11 @@ var routes = Routes{
 		v1.Search,
 		[]string{},
 	},
+	Route{
+		"SearchSuggestions",
+		"GET",
+		"/api/v1/search-suggestions/{userId}",
+		v1.SearchSuggestions,
+		[]string{},
+	},
 }
