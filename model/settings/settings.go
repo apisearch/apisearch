@@ -6,6 +6,7 @@ import (
 	"github.com/apisearch/apisearch/model/elasticsearch"
 	"golang.org/x/net/context"
 	"gopkg.in/olivere/elastic.v5"
+	"time"
 )
 
 type Settings struct {
@@ -51,6 +52,7 @@ func (s *Settings) Create() (NewUser, error) {
 	s.UserId = response.Id
 
 	client.Refresh(indexName)
+	time.Sleep(time.Second)
 
 	return NewUser{response.Id, s.Token}, nil
 }
