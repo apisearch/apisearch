@@ -24,7 +24,7 @@ func Search(userId string, query string, limit int) (ProductList, error) {
 	matchQuery.TieBreaker(0.3)
 
 	// autocomplete
-	matchPrefixQuery := elastic.NewMatchPhrasePrefixQuery("name.icu", query)
+	matchPrefixQuery := elastic.NewPrefixQuery("name.icu", query)
 
 	if len(query) > 3 {
 		// typos
