@@ -15,16 +15,32 @@ func Search(userId string, query string, limit int) (ProductList, error) {
 
 	client := elasticsearch.CreateClient()
 
+	boolQuery := elastic.NewBoolQuery()
+	boolQuery.MinimumNumberShouldMatch(1)
+
+	// fulltext
 	matchQuery := elastic.NewMultiMatchQuery(query, "name.hunspell^3", "name.icu^3", "name.shingle", "name", "description")
-	matchQuery.TieBreaker(0.3)
 	matchQuery.Type("most_fields")
+	matchQuery.TieBreaker(0.3)
+
+	// autocomplete
+	matchPrefixQuery := elastic.NewMatchPhrasePrefixQuery("name.icu", query)
+
+	if len(query) > 3 {
+		// typos
+		fuzzyQuery := elastic.NewMatchQuery("name.hunspell", query)
+		fuzzyQuery.Fuzziness("1")
+		fuzzyQuery.Analyzer("hunspell")
+
+		boolQuery.Should(matchQuery, matchPrefixQuery, fuzzyQuery)
+	} else {
+		boolQuery.Should(matchQuery, matchPrefixQuery)
+	}
 
 	userTermQuery := elastic.NewTermQuery("userId", userId)
+	boolQuery.Must(userTermQuery)
 
-	boolQuery := elastic.NewBoolQuery()
-	boolQuery.Must(matchQuery, userTermQuery)
-
-	res, err := client.Search(indexName).Query(matchQuery).Size(limit).Do(context.TODO())
+	res, err := client.Search(indexName).Query(boolQuery).Size(limit).Do(context.TODO())
 
 	if err != nil {
 		return productList, err
