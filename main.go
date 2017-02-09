@@ -4,6 +4,7 @@ import (
 	"github.com/apisearch/apisearch/commands/elastic"
 	"github.com/apisearch/apisearch/commands/importer"
 	"github.com/apisearch/apisearch/routers"
+	"github.com/gorilla/handlers"
 	"github.com/urfave/cli"
 	"log"
 	"net/http"
@@ -23,7 +24,7 @@ func main() {
 			Action: func(c *cli.Context) error {
 				log.Println("Starting HTTP server...")
 				router := routers.NewRouter()
-				log.Fatal(http.ListenAndServe(":8080", router))
+				log.Fatal(http.ListenAndServe(":8080", handlers.CORS()(router)))
 				return nil
 			},
 		},
