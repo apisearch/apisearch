@@ -217,7 +217,7 @@ func (p *Product) BulkIndex(bulk *elastic.BulkProcessor) {
 func BulkStart() (*elastic.BulkProcessor, error) {
 	client := elasticsearch.CreateClient()
 
-	return client.BulkProcessor().Name(indexName).Workers(4).Do()
+	return client.BulkProcessor().Name(indexName).Workers(4).Do(context.TODO())
 }
 
 func BulkFlush(bulk *elastic.BulkProcessor) error {

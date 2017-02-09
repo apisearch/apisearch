@@ -11,6 +11,7 @@ machine:
 
 dependencies:
   pre:
+    - rm -rf ~/.go_workspace/src/github.com/apisearch/apisearch ./apisearch
     - go get -t -d -v ./...
   override:
     - go build -a -installsuffix cgo -o apisearch .

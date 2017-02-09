@@ -14,7 +14,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "apisearch importer"
 	app.Usage = "download xml files and import them into elasticsearch"
-	app.Version = "0.0.1"
+	app.Version = "1.0.0"
 	app.Commands = []cli.Command{
 		{
 			Name:    "server",
